@@ -118,6 +118,7 @@ class MainWindow(QWidget):
             M2_sw_bias, M2_sw_amp, M2_sw_freq, M2_step_stepsize, M2_step_period, M2_step_dutycycle
                 
         self.setWindowTitle('Motor Control Software V2.0')
+        self.setWindowIcon(QtGui.QIcon('BIRO_logo.png'))
         
         connected_ports = find_available_ports()
 
