@@ -31,8 +31,8 @@ Gemini_Teensy41 m5(motor_ID5, CAN_ID, Gear_ratio);
 Gemini_Teensy41 m6(motor_ID6, CAN_ID, Gear_ratio);
 
 //***For managing the Controller and Bluetooth rate
-double freq_ctrl = 100;  // [Hz] teensy controller sample rate (Maximum frequency: 1000 Hz due to Can Bus) Controller must be faster than ble
-double freq_ble  = 30;  // [Hz] Bluetooth sending data frequency
+double freq_ctrl  = 100;  // [Hz] teensy controller sample rate (Maximum frequency: 1000 Hz due to Can Bus) Controller must be faster than ble
+double freq_ble   = 30;  // [Hz] Bluetooth sending data frequency
 unsigned long t_0 = 0;
 unsigned long t   = 0;
 unsigned long prev_t_ctrl = 0;                                      // used to control the controller sample rate.
@@ -68,6 +68,7 @@ float step_dutycycle = 0;
 
 int M1_g_ID = 0;
 int M2_g_ID = 0;
+int M_active = 0;
 
 double m1_pos_cmd = 0.0;
 double m2_pos_cmd = 0.0;
@@ -565,6 +566,8 @@ void Receive_ble_Data(){
           step_period          = data_rs232_rx[11];
           step_dutycycle       = data_rs232_rx[12];
 
+          M_active = M_Selected;
+
           g_ID_assignment();
 
           Serial.print("| Motor ");
@@ -646,8 +649,8 @@ void g_ID_assignment() {
                     break;
                     case 3:
                       M1_g_ID = 113;
-                      m1_step_size    = step_size;
-                      m1_step_period = step_period;
+                      m1_step_size       = step_size;
+                      m1_step_period     = step_period;
                       m1_step_dutycycle  = step_dutycycle;
                     break;
                   }
@@ -685,7 +688,9 @@ void M1_cdm_assignment() {
   switch (M1_g_ID) {
     // Motor 1
     case 111:
-      m1_pos_cmd = pos_cmd;
+      if (M_active == 1) {
+        m1_pos_cmd = pos_cmd;
+      }
     break;
     case 112:
       m1_pos_cmd = m1_sw_bias + m1_sw_amp * sin((2 * PI * m1_sw_freq) * (t / 1000000.0));
@@ -701,7 +706,9 @@ void M2_cdm_assignment() {
   switch (M2_g_ID) {
     // Motor 2
     case 211:
-      m2_pos_cmd = pos_cmd;
+      if (M_active == 2) {
+        m2_pos_cmd = pos_cmd;
+      }
     break;
     case 212:
       m2_pos_cmd = m2_sw_bias + m2_sw_amp * sin((2 * PI * m2_sw_freq) * (t / 1000000.0));
