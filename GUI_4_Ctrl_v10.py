@@ -6,6 +6,7 @@ The following was added/modified:
 1. The command options for motors 3,4 and 5 where added (Just graphical part)
 2. [06/12/2024] The issue with the sliders was solved (the command on a motor affects both or all of them)
    This was solved in the code that runs on Teensy. I added an If statement to ensure that the command only affects the active motor.
+   Check the fucntions M#_cmd_assignment().
 
 Expected beahvior and working
 
